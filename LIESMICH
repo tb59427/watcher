@@ -1,0 +1,34 @@
+/*
+ * Beschreibung der Webcam-Logik fuer www.lsv-grenzland.de
+ */
+
+Die beiden C-Programme watcher und checker sowie das Shellskript start_watcher.sh
+steuern die Generierung von Thumbnails und des jeweils aktuellen letzten Bildes unserer Webcams.
+Sie sind essentiell fuer die regelmaessige Aktualisierung der Webcam-Bilder auf der Webseite des LSV.
+
+Die Kameras schreiben per FTP ein Bild ca. alle 3-5min in die Verzeichenisse webcam/{vorfeld,vereinsheim,
+start25,start07}. Das jeweils von den Webcams angezeigte Kleinbild muss thumbnail.jpg heissen, das
+Vollbild bigpic.jpg. Fuer das Kleinbild muss das von der Kamera uebertragene Bild "klein-
+gerechnet" werden.
+
+Diesen "Job" uebernimmt das Programm "watcher":
+Watcher ueberwacht eine beliebige Zahl von Directories auf das entstehen neuer Dateien.
+Da die Kameras regelmaessig neue Dateien senden stellt watcher regelmaessig fest, dass
+eine neue Datei vorhanden ist. Wenn diese geschlossen wird, kopiert watcher die in bigpic.jpg
+und generiert einen thumbnail namens thumbnail.jpg aus dem Bild. Jeweils in den Directory
+in dem die Datei gefunden wurde.
+
+Watcher prueft nicht, ob die Dateien wirklich jpgs sind sondern richtet sich nur nach der Endung. 
+
+Das Kommando "watcher vereinsheim" prueft das Entstehen neuer Bilddateien im Verzeichnis "vereinsheim"
+
+Checker kann pruefen, ob ein Prozess laeuft. Das Kommando "checker watcher" prueft, ob der 
+"watcher" laeuft. 
+
+Im Shellskript start_watch.sh wird zunaechst geprueft, ob der watcher prozess laeuft. Laeuft er schon
+passiert nix. Laeuft er nicht, wird er gestartet.
+
+Dieses Shellskript wird nach einem Neustart und alle Stunde ausgefuehrt (ueber cron).
+Der entsprechende Eintrag in der crontab ist
+@hourly /homepages/25/d558414169/htdocs/webcams/watch-loesungen/start_watcher.sh
+@reboot /homepages/25/d558414169/htdocs/webcams/watch-loesungen/start_watcher.sh
